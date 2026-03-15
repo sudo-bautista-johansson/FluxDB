@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VeldraDB Documentation</title>
+    <!-- Modern clean fonts like standard tech docs -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Code Highlight core -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <span class="logo">🔥 VeldraDB</span>
+            <span class="version">v1.2.0</span>
+        </div>
+        
+        <nav class="nav-menu">
+            <div class="nav-section">
+                <h3>Introduction</h3>
+                <ul>
+                    <li><a href="#what-is-veldra" class="active">What is VeldraDB?</a></li>
+                    <li><a href="#core-concepts">Core Concepts (ECS)</a></li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <h3>Language Integrations</h3>
+                <ul>
+                    <li><a href="#integration-csharp">Unity / C#</a></li>
+                    <li><a href="#integration-cpp">Unreal / Native C++</a></li>
+                    <li><a href="#integration-python">Python (AI / Scripts)</a></li>
+                    <li><a href="#integration-go">Go (Microservices)</a></li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <h3>GQL - The Full API</h3>
+                <ul>
+                    <li><a href="#gql-create">CREATE / DROP</a></li>
+                    <li><a href="#gql-spawn">SPAWN / INSERT</a></li>
+                    <li><a href="#gql-select">SELECT / FIND (Spatial)</a></li>
+                    <li><a href="#gql-update">UPDATE / DELETE</a></li>
+                    <li><a href="#gql-snapshot">SNAPSHOT / RESTORE</a></li>
+                </ul>
+            </div>
+
+            <div class="nav-section">
+                <h3>Tooling</h3>
+                <ul>
+                    <li><a href="#veldra-studio">Veldra Studio IDE</a></li>
+                </ul>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content Docs -->
+    <main class="content">
+        <header class="topbar">
+            <h1>Official Documentation</h1>
+            <div class="search-bar">
+                <input type="text" placeholder="Search documentation... (Press '/')">
+            </div>
+        </header>
+
+        <article class="doc-body">
+            
+            <!-- INTRODUCTION -->
+            <section id="what-is-veldra">
+                <h2>What is VeldraDB?</h2>
+                <p>Welcome to <strong>VeldraDB</strong>, the world's first embedded database designed exclusively from the ground up for <strong>Enterprise Game Engines</strong>.</p>
+                <p>Traditional SQL databases (like MySQL) or document stores (MongoDB) are built over a network, creating milliseconds of latency per query. In game development, where a frame must render in 16ms, network delays are unacceptable.</p>
+                <p>VeldraDB behaves like SQLite: it is <strong>100% embedded in your game's memory</strong>. However, instead of using traditional relational tables, it organizes data using an <strong>Entity Component System (ECS)</strong> approach. This ensures data is contiguous in RAM (Archetypes), allowing for instant CPU cache hits and millions of operations per second directly inside your game loop.</p>
+                
+                <div class="info-box">
+                    <strong>💡 Key Takeaway:</strong> VeldraDB perfectly blends the durability of a database (writing to disk safely) with the lightning speed of an in-memory game state engine.
+                </div>
+            </section>
+            
+            <hr>
+
+            <!-- LANGUAGE BINDINGS -->
+            <section id="integration-csharp">
+                <h2>Unity / C# Integration</h2>
+                <p>VeldraDB binds natively to C# via P/Invoke. It is garbage-collector (GC) friendly, as the memory is managed entirely in the C++ backend.</p>
+<pre><code class="language-csharp">using Veldra; // Require VeldraDB.cs in your project
+
+public class GameManager {
+    VeldraDB db;
+    
+    public void LoadGame() {
+        // Instantly maps the 4KB pages from disk to RAM
+        db = new VeldraDB("saves/world1.vdb"); 
+        
+        // Native interaction
+        db.Query("SPAWN PREFAB 'player' WITH health = 100, tag = 'hero';");
+    }
+    
+    public void OnDestroy() {
+        db.Dispose(); // Sycnchronizes pending changes back to disk
+    }
+}</code></pre>
+            </section>
+
+            <section id="integration-cpp">
+                <h2>Unreal Engine / Native C++</h2>
+                <p>For custom C++ engines or Unreal, you link against the static VeldraDB lib. This grants absolute zero-overhead direct memory access to the ECS archetypes.</p>
+<pre><code class="language-cpp">#include "core/veldra.h"
+
+int main() {
+    veldradb::Database db("saves/world1.vdb");
+    db.query("SPAWN PREFAB 'boss' WITH health = 10000;");
+    return 0; // Autosaves on destruction
+}</code></pre>
+            </section>
+
+            <section id="integration-python">
+                <h2>Python Binding (AI & Data Science)</h2>
+                <p>Great for training AI models on your game's telemetry data or scripting map generators.</p>
+<pre><code class="language-python">import veldradb
+
+# Connects to the exact same file your game uses
+db = veldradb.connect("saves/world1.vdb")
+
+# Fetch telemetry logic
+rows = db.query("SELECT id, health FROM entities WHERE tag = 'enemy';")
+for row in rows:
+    print(f"Enemy {row['id']} has {row['health']} HP")
+</code></pre>
+            </section>
+            
+            <section id="integration-go">
+                <h2>Go Binding (Microservices & Multiplayer)</h2>
+                <p>If you are building an authoritative backend server for multiplayer, the Go bindings provide thread-safe access.</p>
+<pre><code class="language-go">package main
+
+import (
+    "fmt"
+    "github.com/veldradb/go-veldra"
+)
+
+func main() {
+    db, _ := veldra.Open("saves/world1.vdb")
+    defer db.Close()
+    
+    result := db.Query("FIND entities NEAR (0.0, 0.0, 0.0) WITHIN 50.0")
+    fmt.Println(result)
+}
+</code></pre>
+            </section>
+
+            <hr>
+
+            <!-- THE FULL API (GQL) -->
+            <section id="gql-create">
+                <h2>GQL Reference: Schema Definition</h2>
+                <p>VeldraDB supports explicit tables or dynamic entity injections. Standard schema logic applies:</p>
+
+                <h3>CREATE TABLE</h3>
+<pre><code class="language-sql">CREATE TABLE players (
+    id INT,
+    health FLOAT,
+    tag STRING
+);
+</code></pre>
+
+                <h3>DROP TABLE</h3>
+<pre><code class="language-sql">DROP TABLE players;
+</code></pre>
+            </section>
+
+            <section id="gql-spawn">
+                <h2>GQL Reference: Spawning & Insertion</h2>
+                <p>Instead of rigid SQL INSERTS, GQL allows dynamic ECS combinations.</p>
+
+                <h3>SPAWN PREFAB</h3>
+                <p>The standard way to drop objects into the game world.</p>
+<pre><code class="language-sql">-- Automatically injects components into an archetype
+SPAWN PREFAB 'goblin' WITH health = 100, pos_x = 10.5, pos_y = 0.0;
+</code></pre>
+
+                <h3>INSERT INTO</h3>
+                <p>Standard SQL-like insertion if you prefer strict schemas.</p>
+<pre><code class="language-sql">INSERT INTO entities (id, tag, health) VALUES (1, 'enemy', 50.0);
+</code></pre>
+            </section>
+
+            <section id="gql-select">
+                <h2>GQL Reference: Querying & Spatial Logic</h2>
+                <p>This is VeldraDB's superpower. The engine includes an explicit `FIND NEAR` spatial hash grid system resolving spatial math in $O(1)$ time.</p>
+
+                <h3>SELECT</h3>
+                <p>Standard data fetching.</p>
+<pre><code class="language-sql">SELECT id, health FROM players WHERE health > 0 ORDER BY health DESC LIMIT 10;
+</code></pre>
+
+                <h3>FIND NEAR (Spatial Query)</h3>
+                <p>Locates physical entities inside a 3D sphere. <br>
+                <strong>Important:</strong> Coordinates must be explicitly defined as floating-point numerals (e.g. `10.0`, not `10`).</p>
+<pre><code class="language-sql">-- Fireball explosion logic
+FIND entities NEAR (10.0, 0.0, 5.0) WITHIN 50.0 WHERE tag = 'enemy';
+</code></pre>
+            </section>
+
+            <section id="gql-update">
+                <h2>GQL Reference: Modifying State</h2>
+
+                <h3>UPDATE</h3>
+                <p>Apply mathematical changes across massive arrays of entities instantly.</p>
+<pre><code class="language-sql">-- Damage all enemies at once
+UPDATE entities SET health = health - 50.0 WHERE tag = 'enemy';
+</code></pre>
+
+                <h3>DELETE</h3>
+                <p>Remove entities from RAM and disk.</p>
+<pre><code class="language-sql">-- Garbage collect dead bodies
+DELETE FROM entities WHERE health <= 0.0;
+</code></pre>
+            </section>
+
+            <section id="gql-snapshot">
+                <h2>GQL Reference: World State Management</h2>
+                <p>VeldraDB allows native game-state saving and loading bypassing all OS overhead by creating direct Memory Page snapshots.</p>
+
+                <h3>SNAPSHOT (Quick Save)</h3>
+<pre><code class="language-sql">-- Duplicates the current Archetype RAM explicitly to disk slot
+SNAPSHOT TO 'slot1_quicksave';
+</code></pre>
+
+                <h3>RESTORE (Quick Load)</h3>
+<pre><code class="language-sql">-- Wipes current memory and re-mounts the slot in microseconds
+RESTORE FROM 'slot1_quicksave';
+</code></pre>
+            </section>
+
+            <hr>
+
+             <section id="veldra-studio">
+                <h2>Veldra Studio (Desktop IDE)</h2>
+                <p>VeldraDB ships with a completely native, offline, developer IDE to help game designers visualize the `.vdb` files directly without writing code.</p>
+                
+                <div class="info-box">
+                    <strong>🚀 Quick Access:</strong> If the local background engine is running, you can access the IDE directly right now!
+                    <br><br>
+                    <a href="https://veldra-studio.netlify.app/" target="_blank" style="display:inline-block; background:var(--text-main); color:white; padding:10px 20px; text-decoration:none; border-radius:5px; font-weight:bold;">Launch Veldra Studio</a>
+                </div>
+
+                <p><strong>To start the server manually via CLI:</strong></p>
+<pre><code class="language-bash">veldra.exe serve -port 8080 my_world.vdb</code></pre>
+                <p>The studio boasts full Intellisense UI, syntax highlighting, and an execution planner to debug your game worlds visually.</p>
+            </section>
+
+        </article>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-go.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+
+    <script>
+        // Simple scroll spy logic
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('section');
+            const navLinks = document.querySelectorAll('.nav-menu a');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (scrollY >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href').includes(current)) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

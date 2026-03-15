@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veldra Studio</title>
+    
+    <!-- CodeMirror Core -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/theme/dracula.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/hint/show-hint.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar: Project Explorer -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">🔥</span> Veldra Studio
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3 class="section-title">DATABASE</h3>
+                <ul class="tree-view" id="db-tree">
+                    <li class="tree-item active">
+                        <span class="icon">🗄️</span> <span id="db-name-label">Loading...</span>
+                    </li>
+                    <ul class="tree-sub">
+                        <li class="tree-item"><span class="icon">📦</span> Entities (<span id="stat-entities">0</span>)</li>
+                        <li class="tree-item"><span class="icon">🏷️</span> Archetypes (<span id="stat-archetypes">0</span>)</li>
+                        <li class="tree-item"><span class="icon">📄</span> Active Pages (<span id="stat-pages">0</span>)</li>
+                    </ul>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h3 class="section-title">SAVED QUERIES</h3>
+                <ul class="tree-view">
+                    <li class="tree-item query-item" onclick="loadQuery(1)"><span class="icon">🔍</span> Find Enemies Near</li>
+                    <li class="tree-item query-item" onclick="loadQuery(2)"><span class="icon">⚡</span> Spawn Goblin</li>
+                    <li class="tree-item query-item" onclick="loadQuery(3)"><span class="icon">💀</span> Cleanup Dead</li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="status-indicator online"></div>
+                <span id="connection-status">Connected to Local Engine</span>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Top Toolbar -->
+            <header class="toolbar">
+                <div class="toolbar-left">
+                    <button class="btn btn-primary" id="run-btn" onclick="executeQuery()">
+                        <span class="icon">▶</span> Run Query
+                    </button>
+                    <button class="btn btn-secondary" onclick="formatQuery()">
+                        <span class="icon">✨</span> Format
+                    </button>
+                    <span class="divider"></span>
+                    <span class="tab active">query.gql</span>
+                </div>
+                <div class="toolbar-right">
+                    <button class="btn btn-icon" title="Settings">⚙️</button>
+                </div>
+            </header>
+
+            <!-- Editor Pane (Now using CodeMirror) -->
+            <section class="editor-pane" style="position: relative; width: 100%;">
+                <textarea id="code-editor">-- Find all enemies near the player
+FIND entities 
+NEAR (10.0, 0.0, 5.0) 
+WITHIN 50.0 
+WHERE tag = 'enemy';</textarea>
+            </section>
+
+            <!-- Resizer Handle -->
+            <div class="resizer" id="vertical-resizer"></div>
+
+            <!-- Results Pane -->
+            <section class="results-pane">
+                <div class="results-header">
+                    <div class="tabs">
+                        <div class="tab active" data-target="output">Console Output</div>
+                        <div class="tab" data-target="table">Data View</div>
+                        <div class="tab" data-target="plan">Execution Plan</div>
+                    </div>
+                    <div class="results-actions">
+                        <button class="btn btn-icon btn-small" onclick="document.getElementById('console-output').textContent = ''">🧹 Clear</button>
+                    </div>
+                </div>
+                
+                <div class="results-content">
+                    <pre id="console-output" class="output-view view-active">Ready to execute. Local engine idling...</pre>
+                    
+                    <div id="table-view" class="table-view view-hidden">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Tag</th>
+                                    <th>Position (x,y,z)</th>
+                                    <th>Health</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="4" class="empty-state">No data returned yet. Run a query first.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="plan-view" class="plan-view view-hidden">
+                        <div class="plan-node root">
+                            <span class="node-type">FIND</span>
+                            <span class="node-detail">table: entities | scan: SPATIAL</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <!-- CodeMirror Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/hint/show-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/addon/hint/sql-hint.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.13/mode/sql/sql.min.js"></script>
+    
+    <script src="app.js"></script>
+</body>
+</html>

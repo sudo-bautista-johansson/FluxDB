@@ -1,0 +1,25 @@
+{
+  "name": "com.flux.fluxdb",
+  "version": "0.1.0",
+  "displayName": "FluxDB",
+  "description": "Embedded ECS + Spatial game database engine for Unity. Zero-overhead C++ native core accessible via a simple C# API.",
+  "unity": "2021.3",
+  "unityRelease": "0f1",
+  "documentationUrl": "",
+  "changelogUrl": "https://flux-doc.netlify.app/",
+  "licensesUrl": "https://github.com/sudo-bautista-johansson/FluxDB/blob/main/LICENSE",
+  "dependencies": {},
+  "keywords": ["database", "ecs", "spatial", "gamedev", "embedded", "native"],
+  "author": {
+    "name": "Flux Engine Team",
+    "email": "bautistajohansson@gmail.com",
+    "url": "https://github.com/sudo-bautista-johansson/FluxDB"
+  },
+  "samples": [
+    {
+      "displayName": "Quick Start",
+      "description": "Basic VeldraDB usage: insert entities, run queries, use with MonoBehaviour.",
+      "path": "Samples~/QuickStart"
+    }
+  ]
+}
