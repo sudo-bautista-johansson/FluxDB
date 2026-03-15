@@ -4,7 +4,7 @@
 #include <string_view>
 #include <memory>
 
-namespace veldradb {
+namespace fluxdb {
 namespace ecs { class World; } // Forward declare in the correct nested namespace
 namespace query {
 
@@ -14,13 +14,13 @@ namespace query {
 
 class Executor {
 public:
-    Executor(veldradb::ecs::World* world = nullptr) : world_(world) {}
+    Executor(fluxdb::ecs::World* world = nullptr) : world_(world) {}
     
     // Ejecuta el plan completo
     void execute(const ExecutionPlan& plan);
 
 private:
-    veldradb::ecs::World* world_;
+    fluxdb::ecs::World* world_;
     
     void execute_select(const SelectPlanNode* node);
     void execute_insert(const InsertPlanNode* node);

@@ -18,7 +18,7 @@
   "samples": [
     {
       "displayName": "Quick Start",
-      "description": "Basic VeldraDB usage: insert entities, run queries, use with MonoBehaviour.",
+      "description": "Basic FluxDB usage: insert entities, run queries, use with MonoBehaviour.",
       "path": "Samples~/QuickStart"
     }
   ]

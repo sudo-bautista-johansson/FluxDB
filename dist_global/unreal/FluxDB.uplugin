@@ -1,0 +1,24 @@
+{
+    "FileVersion": 3,
+    "Version": 1,
+    "VersionName": "0.1.0",
+    "FriendlyName": "FluxDB",
+    "Description": "Embedded ECS + Spatial game database engine. C++ core accessible via Blueprints.",
+    "Category": "Database",
+    "CreatedBy": "Flux Engine Team",
+    "CreatedByURL": "https://github.com/sudo-bautista-johansson/FluxDB",
+    "DocsURL": "https://flux-doc.netlify.app/",
+    "MarketplaceURL": "",
+    "SupportURL": "",
+    "CanContainContent": false,
+    "IsBetaVersion": true,
+    "IsExperimentalVersion": false,
+    "Installed": false,
+    "Modules": [
+        {
+            "Name": "FluxDB",
+            "Type": "Runtime",
+            "LoadingPhase": "Default"
+        }
+    ]
+}

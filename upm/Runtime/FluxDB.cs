@@ -1,15 +1,9 @@
-// FluxDB.cs - Core C# P/Invoke binding
-// Part of the FluxDB Unity Package (com.flux.fluxdb)
+// FluxDB.cs
 using System;
 using System.Runtime.InteropServices;
 
 namespace Flux
 {
-    /// <summary>
-    /// Low-level FluxDB native bindings.
-    /// Requires the native flux.dll / libflux.so / libflux.dylib
-    /// (included automatically by the package for supported platforms).
-    /// </summary>
     public sealed class FluxDB : IDisposable
     {
         private const string LibName = "flux";
@@ -35,7 +29,6 @@ namespace Flux
         private IntPtr _handle;
         private bool _disposed;
 
-        /// <summary>Open a new FluxDB instance.</summary>
         public FluxDB()
         {
             _handle = flux_init();
@@ -43,7 +36,6 @@ namespace Flux
                 throw new FluxException("Failed to initialize FluxDB: " + LastError());
         }
 
-        /// <summary>Execute a query and return the result as a string.</summary>
         public string Query(string sql)
         {
             if (_disposed) throw new ObjectDisposedException(nameof(FluxDB));
@@ -59,7 +51,6 @@ namespace Flux
             return output;
         }
 
-        /// <summary>Returns the last native error string.</summary>
         public static string LastError()
         {
             IntPtr p = flux_get_last_error();
@@ -79,7 +70,6 @@ namespace Flux
         ~FluxDB() => Dispose();
     }
 
-    /// <summary>Exception thrown by FluxDB operations.</summary>
     public class FluxException : Exception
     {
         public FluxException(string message) : base(message) { }

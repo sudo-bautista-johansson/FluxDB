@@ -1,5 +1,8 @@
 #include "../headers/history.h"
 #include <iostream>
+#include <mutex>
+#include <shared_mutex>
+#include <cstring>
 
 namespace fluxdb {
 namespace ecs {

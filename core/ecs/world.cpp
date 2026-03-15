@@ -15,8 +15,8 @@ World::World(std::shared_ptr<ComponentStore> store,
     archetypes_[empty_sig.to_ullong()] = std::make_unique<Archetype>(empty_sig, *store_);
 
     // Initialize Spatial Index (-10km to +10km)
-    spatial_index_ = std::make_unique<veldradb::spatial::SpatialIndex>(
-        veldradb::spatial::Bounds{-10000, -10000, -10000, 10000, 10000, 10000});
+    spatial_index_ = std::make_unique<fluxdb::spatial::SpatialIndex>(
+        fluxdb::spatial::Bounds{-10000, -10000, -10000, 10000, 10000, 10000});
 }
 
 Entity World::spawn() {

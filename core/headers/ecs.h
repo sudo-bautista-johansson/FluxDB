@@ -85,7 +85,7 @@ class World {
 public:
     World(std::shared_ptr<ComponentStore> store, 
           std::shared_ptr<HistoryManager> history = nullptr,
-          std::shared_ptr<veldradb::query::SubscriptionManager> pubsub = nullptr);
+          std::shared_ptr<fluxdb::query::SubscriptionManager> pubsub = nullptr);
     
     Entity spawn();
     void despawn(Entity entity);
@@ -111,8 +111,8 @@ public:
     
     // Pub/Sub linkage
     void set_position_component_id(ComponentID id) { pos_id_ = id; }
-    veldradb::query::SubscriptionManager* get_pubsub() const { return pubsub_.get(); }
-    veldradb::spatial::SpatialIndex* get_spatial_index() const { return spatial_index_.get(); }
+    fluxdb::query::SubscriptionManager* get_pubsub() const { return pubsub_.get(); }
+    fluxdb::spatial::SpatialIndex* get_spatial_index() const { return spatial_index_.get(); }
 
 private:
     Archetype* get_or_create_archetype(ArchetypeSignature sig);
@@ -121,8 +121,8 @@ private:
     Entity next_entity_ = 0;
     std::shared_ptr<ComponentStore> store_;
     std::shared_ptr<HistoryManager> history_;
-    std::shared_ptr<veldradb::query::SubscriptionManager> pubsub_;
-    std::unique_ptr<veldradb::spatial::SpatialIndex> spatial_index_;
+    std::shared_ptr<fluxdb::query::SubscriptionManager> pubsub_;
+    std::unique_ptr<fluxdb::spatial::SpatialIndex> spatial_index_;
     ComponentID pos_id_ = 255;
     
     struct EntityLocation {
