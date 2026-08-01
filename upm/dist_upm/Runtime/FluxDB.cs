@@ -26,6 +26,18 @@ namespace Flux
         [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
         private static extern IntPtr flux_get_last_error();
 
+        [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern void flux_advance_tick(IntPtr db);
+
+        [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern ulong flux_get_current_tick(IntPtr db);
+
+        [DllImport(LibName, CallingConvention = CallingConvention.Cdecl)]
+        private static extern UIntPtr flux_get_delta_payload(IntPtr db, ulong last_ack_tick, IntPtr out_buffer, UIntPtr buffer_size);
+
+        [DllImport(LibName, CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        private static extern bool flux_run_script(IntPtr db, string lua_code);
+
         private IntPtr _handle;
         private bool _disposed;
 
@@ -49,6 +61,49 @@ namespace Flux
             string output  = Marshal.PtrToStringAnsi(textPtr) ?? string.Empty;
             flux_free_result(resultPtr);
             return output;
+        }
+
+        public void AdvanceTick()
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(FluxDB));
+            flux_advance_tick(_handle);
+        }
+
+        public ulong CurrentTick()
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(FluxDB));
+            return flux_get_current_tick(_handle);
+        }
+
+        public byte[] GetDeltaPayload(ulong lastAckTick, int maxBytes = 65536)
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(FluxDB));
+            if (maxBytes <= 0) throw new ArgumentOutOfRangeException(nameof(maxBytes));
+
+            byte[] buffer = new byte[maxBytes];
+            IntPtr bufferPtr = Marshal.AllocHGlobal(buffer.Length);
+            try
+            {
+                UIntPtr written = flux_get_delta_payload(_handle, lastAckTick, bufferPtr, (UIntPtr)buffer.Length);
+                int count = checked((int)written.ToUInt64());
+                if (count <= 0)
+                    return Array.Empty<byte>();
+
+                Marshal.Copy(bufferPtr, buffer, 0, count);
+                Array.Resize(ref buffer, count);
+                return buffer;
+            }
+            finally
+            {
+                Marshal.FreeHGlobal(bufferPtr);
+            }
+        }
+
+        public bool RunScript(string luaCode)
+        {
+            if (_disposed) throw new ObjectDisposedException(nameof(FluxDB));
+            if (luaCode == null) throw new ArgumentNullException(nameof(luaCode));
+            return flux_run_script(_handle, luaCode);
         }
 
         public static string LastError()

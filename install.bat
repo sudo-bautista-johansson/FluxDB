@@ -1,6 +1,6 @@
 @echo off
 echo ==============================================
-echo  FluxDB C++ Engine System Installer (Win64)
+echo  FluxDB C++ Engine System Installer v0.2.0 (Win64)
 echo ==============================================
 echo.
 echo Compiling FluxDB Engine...
@@ -19,6 +19,7 @@ if exist flux.dll (
     )
 )
 
+:: Match the full CMake CORE_SOURCES surface so the installer exports the complete FluxDB runtime.
 g++ -shared -o flux.dll ^
     -x c build\_deps\lua-src\onelua.c -DMAKE_LIB ^
     -x c++ ^
@@ -27,7 +28,7 @@ g++ -shared -o flux.dll ^
     core\storage\*.cpp ^
     core\spatial\*.cpp ^
     core\network\*.cpp ^
-    core\types\*.cpp ^
+    core\snapshot\*.cpp ^
     -I. -Icore\headers -Ibuild\_deps\lua-src ^
     -std=c++17 -lws2_32 -lwinmm -static-libgcc -static-libstdc++
 
@@ -44,15 +45,17 @@ copy /Y flux.dll C:\Windows\System32\flux.dll
 echo [2/3] Creating Global Include Headers...
 if not exist "C:\FluxDB\include" mkdir "C:\FluxDB\include"
 copy /Y core\headers\flux_c_api.h C:\FluxDB\include\flux_c_api.h
+copy /Y core\headers\fluxdb.h C:\FluxDB\include\fluxdb.h
 
 echo [3/3] Setting User Environment Variable FLUX_PATH
 setx FLUX_PATH "C:\FluxDB"
 
 echo.
 echo ==============================================
-echo Success! FluxDB Engine is now installed globally.
+echo Success! FluxDB Engine v0.2.0 is now installed globally.
 echo You can now use the engine in any project using:
 echo   Python: 'pip install .' in bindings/python/
-echo   C++: Include #include ^<flux_c_api.h^> and link against C:\Windows\System32\flux.dll
+echo   C++: Include ^<flux_c_api.h^> or ^<fluxdb.h^> and link against C:\Windows\System32\flux.dll
+echo   Full API surface: GQL queries, ECS, spatial, networking, Lua scripting, time-travel, delta sync.
 echo ==============================================
 pause
