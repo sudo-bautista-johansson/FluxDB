@@ -3,7 +3,7 @@
 #include <cassert>
 #include "../core/headers/ecs.h"
 
-using namespace veldradb::ecs;
+using namespace fluxdb::ecs;
 
 struct Position {
     float x, y, z;

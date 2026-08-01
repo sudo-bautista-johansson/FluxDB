@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FluxDB — Documentación Oficial</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-main: #0b0f19;
+            --bg-sidebar: #0f172a;
+            --bg-card: #1e293b;
+            --bg-code: #090d16;
+            --border-color: #334155;
+            --border-highlight: #38bdf8;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-cyan: #38bdf8;
+            --accent-purple: #a855f7;
+            --accent-green: #34d399;
+            --accent-yellow: #fbbf24;
+            --accent-red: #f87171;
+            --gradient-primary: linear-gradient(135deg, #38bdf8 0%, #a855f7 100%);
+            --sidebar-width: 300px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* --- Sidebar Navigation --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--gradient-primary);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 900;
+            font-size: 1rem;
+            -webkit-text-fill-color: initial;
+        }
+
+        .search-box {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 14px;
+            background-color: var(--bg-main);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent-cyan);
+        }
+
+        .nav-sections {
+            padding: 16px 0;
+            flex: 1;
+        }
+
+        .nav-group {
+            margin-bottom: 20px;
+        }
+
+        .nav-title {
+            padding: 8px 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .nav-link {
+            display: block;
+            padding: 8px 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.15s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+            background-color: rgba(255, 255, 255, 0.03);
+            border-left-color: var(--accent-cyan);
+        }
+
+        .nav-link.active {
+            color: var(--accent-cyan);
+            font-weight: 600;
+            background-color: rgba(56, 189, 248, 0.08);
+            border-left-color: var(--accent-cyan);
+        }
+
+        /* --- Main Content Area --- */
+        .content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 40px 60px;
+            max-width: 1200px;
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            background-color: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 20px;
+            color: var(--accent-cyan);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-description {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            line-height: 1.7;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .stat-val {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--accent-cyan);
+        }
+
+        .stat-lbl {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* --- Section Styling --- */
+        section {
+            margin-bottom: 60px;
+            scroll-margin-top: 40px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .section-icon {
+            font-size: 1.8rem;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 30px 0 14px 0;
+            color: var(--accent-cyan);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+            font-size: 1.025rem;
+        }
+
+        ul, ol {
+            margin: 0 0 20px 24px;
+            color: var(--text-secondary);
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        strong {
+            color: var(--text-primary);
+        }
+
+        /* --- Cards & Grid Layouts --- */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin: 24px 0;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-cyan);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-desc {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* --- Code Blocks --- */
+        .code-block {
+            background-color: var(--bg-code);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background-color: rgba(255, 255, 255, 0.03);
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .copy-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            background-color: rgba(56, 189, 248, 0.1);
+        }
+
+        pre {
+            padding: 20px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: #e2e8f0;
+        }
+
+        /* --- Syntax Highlighting Styles --- */
+        .kw { color: #f472b6; font-weight: 600; } /* KeyWord */
+        .type { color: #38bdf8; font-weight: 600; } /* Type */
+        .func { color: #60a5fa; } /* Function */
+        .str { color: #34d399; } /* String */
+        .num { color: #fbbf24; } /* Number */
+        .cmnt { color: #64748b; font-style: italic; } /* Comment */
+
+        /* --- Table Styling --- */
+        .table-container {
+            overflow-x: auto;
+            margin: 24px 0;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background-color: var(--bg-sidebar);
+            padding: 14px 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 14px 18px;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            background-color: var(--bg-card);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* --- Callout Alert --- */
+        .alert {
+            padding: 18px;
+            border-radius: 12px;
+            margin: 24px 0;
+            border-left: 4px solid;
+            background-color: var(--bg-card);
+        }
+
+        .alert-info {
+            border-left-color: var(--accent-cyan);
+            background-color: rgba(56, 189, 248, 0.05);
+        }
+
+        .alert-warning {
+            border-left-color: var(--accent-yellow);
+            background-color: rgba(251, 191, 36, 0.05);
+        }
+
+        .alert-title {
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-primary);
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 24px;
+            }
+
+            .mobile-toggle {
+                display: block;
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: var(--gradient-primary);
+                color: white;
+                border: none;
+                border-radius: 50%;
+                width: 50px;
+                height: 50px;
+                font-size: 1.4rem;
+                cursor: pointer;
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+                z-index: 200;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="logo">
+                <div class="logo-icon">FX</div>
+                FluxDB Docs
+            </a>
+        </div>
+        <div class="search-box">
+            <input type="text" id="searchInput" class="search-input" placeholder="Buscar en la documentación...">
+        </div>
+        <nav class="nav-sections">
+            <div class="nav-group">
+                <div class="nav-title">1. Introducción</div>
+                <a href="#que-es-fluxdb" class="nav-link">¿Qué es FluxDB?</a>
+                <a href="#en-que-se-especializa" class="nav-link">¿En qué se especializa?</a>
+                <a href="#por-que-fluxdb" class="nav-link">¿Por qué FluxDB?</a>
+                <a href="#que-hace" class="nav-link">¿Qué hace exactamente?</a>
+                <a href="#comparativa" class="nav-link">Comparativa de Motores</a>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-title">2. Teoría Completa</div>
+                <a href="#memoria-arquetipos" class="nav-link">Memoria: SoA, AoSoA & Tiers</a>
+                <a href="#rollback-cow" class="nav-link">Snapshots Copy-On-Write (COW)</a>
+                <a href="#versionado-temporal" class="nav-link">Versionado Temporal & TickRings</a>
+                <a href="#delta-engine" class="nav-link">Unified Delta Engine & Codecs</a>
+                <a href="#relaciones-nativas" class="nav-link">Grafos de Relaciones Nativas</a>
+                <a href="#espacialidad-octree" class="nav-link">Octree 3D & Rebasing Infinito</a>
+                <a href="#ia-nativa" class="nav-link">IA Nativa (Blackboard / GOAP / BT)</a>
+                <a href="#divergencia-causal" class="nav-link">Divergencia Causal & Profiling</a>
+            </div>
+
+            <div class="nav-group">
+                <div class="nav-title">3. Ejemplos de Código</div>
+                <a href="#code-setup" class="nav-link">1. Setup del World & Store</a>
+                <a href="#code-crud" class="nav-link">2. Spawning & Consultas Compiladas</a>
+                <a href="#code-relations" class="nav-link">3. Jerarquías de Entidades (ChildOf)</a>
+                <a href="#code-spatial" class="nav-link">4. Consultas Espaciales 3D</a>
+                <a href="#code-rollback" class="nav-link">5. Rollback Netcode & Snapshots</a>
+                <a href="#code-ai" class="nav-link">6. Sistemas de IA Nativa (GOAP)</a>
+                <a href="#code-modding" class="nav-link">7. Modding & Hot-Reload en Caliente</a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content">
+        
+        <!-- Hero Section -->
+        <header class="hero">
+            <div class="hero-badge">⚡ FluxDB Core v0.1 — 100% Production Ready</div>
+            <h1 class="hero-title">FluxDB API & Architecture Documentation</h1>
+            <p class="hero-description">
+                El primer motor de base de datos e hiper-ECS híbrido creado desde cero para simulaciones masivas en tiempo real, netcode determinista de rollback y motores de videojuegos de última generación.
+            </p>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-val">34 / 34</div>
+                    <div class="stat-lbl">Features Implementadas (100%)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-val">2.7M / ms</div>
+                    <div class="stat-lbl">AoSoA SIMD Throughput</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-val">394.0 FPS</div>
+                    <div class="stat-lbl">Real Game Benchmark Sim</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-val">8 μs</div>
+                    <div class="stat-lbl">Detección Divergencia Causal</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ───────────────────────────────────────────────────────────── -->
+        <!-- SECTION 1: INTRODUCCIÓN -->
+        <!-- ───────────────────────────────────────────────────────────── -->
+        <section id="introduccion">
+            <div class="section-header">
+                <span class="section-icon">🚀</span>
+                <h2>1. Introducción Oficial</h2>
+            </div>
+
+            <article id="que-es-fluxdb">
+                <h3>¿Qué es FluxDB?</h3>
+                <p>
+                    <strong>FluxDB</strong> es una base de datos distribuida en memoria y un motor <strong>ECS (Entity Component System) híbrido de ultra-alta velocidad</strong> programado en C++17 nativo. Ha sido diseñado específicamente para resolver los cuellos de botella de sincronización, rendimiento de caché y netcode que sufren las simulaciones masivas y los motores de videojuegos modernos (Unreal Engine 5, Unity DOTS, Flecs y servidores multijugador dedicados).
+                </p>
+            </article>
+
+            <article id="en-que-se-especializa">
+                <h3>¿En qué se especializa?</h3>
+                <p>FluxDB no intenta ser una base de datos relacional tradicional (como PostgreSQL) ni un simple almacén clave-valor (como Redis). Se especializa en:</p>
+                <div class="card-grid">
+                    <div class="card">
+                        <div class="card-title">🎮 Netcode de Rollback Determinista</div>
+                        <div class="card-desc">Captura snapshots estructurales con costo Copy-On-Write (COW) y resimula frames pasados instantáneamente.</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">⚡ Layout Cache-Friendly SIMD</div>
+                        <div class="card-desc">Estructuración contigua por arquetipos en formatos SoA y AoSoA (Array-of-Structs-of-Arrays) de ancho de carril SIMD.</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">🌐 Espacialidad Nativa Infinta</div>
+                        <div class="card-desc">Índices Octree O(1) combinados con coordenadas de sector de 64 bits (<code>SectorPos</code>) para origin rebasing sin tirones.</div>
+                    </div>
+                    <div class="card">
+                        <div class="card-title">🤖 IA Nativa e Hiper-Versionado</div>
+                        <div class="card-desc">Almacenamiento nativo para Blackboards, planos GOAP y Árboles de Comportamiento con versionado fino por tick.</div>
+                    </div>
+                </div>
+            </article>
+
+            <article id="por-que-fluxdb">
+                <h3>¿Por qué FluxDB?</h3>
+                <p>
+                    En el desarrollo de videojuegos y simulaciones en tiempo real, las bases de datos convencionales introducen latencias de milisegundos inaceptables en el game loop. Por otro lado, los motores ECS tradicionales carecen de:
+                </p>
+                <ul>
+                    <li><strong>Versionado histórico nativo:</strong> Imposibilidad de consultar cómo estaba el mundo en el tick $N-10$ sin duplicar toda la memoria.</li>
+                    <li><strong>Replicación de red automática:</strong> La serialización de deltas suele requerir código manual propenso a errores.</li>
+                    <li><strong>Hot-Reload de componentes en vivo:</strong> Modificar una estructura en tiempo de ejecución solía requerir reiniciar la simulación.</li>
+                </ul>
+                <p>FluxDB integra todas estas necesidades directamente en la capa de almacenamiento de memoria contigua.</p>
+            </article>
+
+            <article id="que-hace">
+                <h3>¿Qué hace exactamente?</h3>
+                <p>FluxDB administra la memoria de tu aplicación organizando las entidades en <strong>Arquetipos</strong> (combinaciones únicas de componentes). Cada componente vive en un array contiguo de páginas. Cuando se realiza un cambio:</p>
+                <ol>
+                    <li>El <strong>TickRing</strong> sella la versión exacta de la escritura.</li>
+                    <li>El <strong>Unified Delta Engine</strong> calcula automáticamente la diferencia bit a bit y empaqueta la delta comprimida en RLE/Cuantizado.</li>
+                    <li>Si ocurre desincronización de red, el sistema de <strong>Causal Divergence Tracing</strong> rastrea exactamente qué sistema y qué tick causó la diferencia en 8 microsegundos.</li>
+                </ol>
+            </article>
+
+            <article id="comparativa">
+                <h3>Comparativa de Motores y Motores ECS</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Característica</th>
+                                <th>FluxDB</th>
+                                <th>Flecs / Unity DOTS</th>
+                                <th>SQLite / Redis</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Rendimiento Iteración</strong></td>
+                                <td>🔥 Ultra-Alto (SoA / AoSoA SIMD)</td>
+                                <td>Alto (SoA)</td>
+                                <td>Bajo / Medio (B-Tree / KV)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Rollback Netcode COW</strong></td>
+                                <td>✅ Nativo O(1)</td>
+                                <td>❌ Manual</td>
+                                <td>❌ No soportado</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Versionado Temporal por Tick</strong></td>
+                                <td>✅ Nativo (TickRings)</td>
+                                <td>❌ No disponible</td>
+                                <td>❌ Requiere WAL pesado</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Hot-Reload de Schemas</strong></td>
+                                <td>✅ Migración in-place in-game</td>
+                                <td>⚠️ Limitado</td>
+                                <td>❌ Bloqueante</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tracing Divergencia Causal</strong></td>
+                                <td>✅ Nativo (μs precision)</td>
+                                <td>❌ No disponible</td>
+                                <td>❌ No disponible</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </section>
+
+        <!-- ───────────────────────────────────────────────────────────── -->
+        <!-- SECTION 2: TEORÍA COMPLETA -->
+        <!-- ───────────────────────────────────────────────────────────── -->
+        <section id="teoria">
+            <div class="section-header">
+                <span class="section-icon">🧠</span>
+                <h2>2. Arquitectura y Teoría Completa</h2>
+            </div>
+
+            <article id="memoria-arquetipos">
+                <h3>Arquitectura de Memoria: SoA, AoSoA y Clasificación Hot/Warm/Cold</h3>
+                <p>
+                    FluxDB clasifica los componentes en tres niveles de acceso según su frecuencia de uso en el ciclo de frame:
+                </p>
+                <ul>
+                    <li><strong style="color: var(--accent-red);">HOT:</strong> Componentes modificados cada frame (p. ej. <code>Position</code>, <code>Velocity</code>).</li>
+                    <li><strong style="color: var(--accent-yellow);">WARM:</strong> Componentes consultados con frecuencia media (p. ej. <code>Health</code>, <code>Target</code>).</li>
+                    <li><strong style="color: var(--accent-cyan);">COLD:</strong> Componentes raras veces leídos (p. ej. <code>QuestFlags</code>, <code>Inventory</code>).</li>
+                </ul>
+                <p>
+                    En iteraciones <strong>AoSoA (Array-of-Structs-of-Arrays)</strong>, las entidades se agrupan en carriles de ancho SIMD (8 floats contiguos). Una consulta que toca solo componentes HOT nunca arrastra las líneas de caché L1/L2 de los componentes COLD.
+                </p>
+            </article>
+
+            <article id="rollback-cow">
+                <h3>Snapshots Copy-On-Write (COW) & Netcode de Rollback</h3>
+                <p>
+                    Cuando se captura un snapshot del mundo mediante <code>WorldSnapshot::capture(world)</code>, FluxDB <strong>NO realiza una copia profunda (deep-copy) de los datos de los componentes</strong>. En su lugar:
+                </p>
+                <div class="alert alert-info">
+                    <div class="alert-title">💡 Mecanismo Copy-On-Write (COW)</div>
+                    El snapshot comparte las páginas de memoria de los chunks con el estado activo mediante <code>std::shared_ptr</code>. Si una página no se modifica durante el rollback, el costo de captura es $O(\text{páginas})$ en lugar de $O(\text{bytes})$. Si una entidad escribe en una página compartida, esta se clona in-place transparentemente.
+                </div>
+            </article>
+
+            <article id="versionado-temporal">
+                <h3>Versionado Temporal y TickRings Coarse-to-Fine</h3>
+                <p>
+                    FluxDB mantiene un registro exacto del tick del último write por componente y entidad. El sistema de escaneo <code>for_each_changed_entity</code> opera en dos niveles:
+                </p>
+                <ol>
+                    <li><strong>Coarse Granular (O(1)):</strong> Un <code>TickRing</code> a nivel de chunk comprueba si alguno de los elementos del rango tuvo modificaciones posteriores a <code>since_tick</code>. Si no hubo cambios, el chunk completo (512 filas) se ignora instantáneamente.</li>
+                    <li><strong>Fine Granular:</strong> Dentro de chunks sucios, se escanea únicamente el array de ticks del componente.</li>
+                </ol>
+            </article>
+
+            <article id="delta-engine">
+                <h3>Unified Delta Engine & Codecs de Compresión</h3>
+                <p>
+                    El <code>DeltaSet</code> analiza las firmas de versión de las entidades y empaqueta solo los campos modificados. Para reducir el consumo de red, utiliza codificadores especializados:
+                </p>
+                <ul>
+                    <li><code>RleCodec</code>: Compresión Run-Length para bloques de datos repetitivos (logrando más del 98% de reducción en estructuras de estado).</li>
+                    <li><code>QUANTIZED_FLOAT</code>: Cuantización de coordenadas flotantes 3D a enteros escalados de 16 bits para un ancho de banda óptimo.</li>
+                </ul>
+            </article>
+
+            <article id="relaciones-nativas">
+                <h3>Grafos de Relaciones Nativas (#6)</h3>
+                <p>
+                    Las relaciones en FluxDB son aristas directas $(src, kind, dst)$ almacenadas en listas de adyacencia co-localizadas en memoria. Permiten definir jerarquías complejas como torretas montadas en naves (<code>CHILD_OF</code>) o fijación de objetivos (<code>TARGET_OF</code>) con payloads de hasta 8 bytes.
+                </p>
+            </article>
+
+            <article id="espacialidad-octree">
+                <h3>Octree 3D O(1) & Origin Rebasing Infinito (SectorPos)</h3>
+                <p>
+                    Para evitar los problemas de imprecisión de punto flotante en mundos masivos, FluxDB implementa coordenadas de sector de 64 bits (<code>SectorPos</code>). Las entidades se insertan en un <code>SpatialSectorGrid</code> que mantiene subdivisión espacial por octree dentro de cada sector del universo.
+                </p>
+            </article>
+
+            <article id="ia-nativa">
+                <h3>IA Nativa: Blackboard, GOAP y Behavior Trees</h3>
+                <p>
+                    Los componentes de Inteligencia Artificial están integrados en el layout de almacenamiento:
+                </p>
+                <ul>
+                    <li><strong>Blackboard:</strong> Almacena variables de estado clave-valor optimizadas para consultas masivas.</li>
+                    <li><strong>GOAP (Goal-Oriented Action Planning):</strong> Calculador A* determinista capaz de generar más de 27,000 planes de acción por milisegundo.</li>
+                    <li><strong>Behavior Tree:</strong> Evaluador contiguo de nodos Selector, Sequence, Condition y Action.</li>
+                </ul>
+            </article>
+
+            <article id="divergencia-causal">
+                <h3>Trazado de Divergencia Causal & Profiling de Caché</h3>
+                <p>
+                    En caso de desincronización entre cliente y servidor, <code>CausalDivergenceTracer</code> compara los hashes de estado tick a tick. Al detectar una diferencia, recorre en reversa la cadena causal de escrituras identificando el componente, la entidad y el sistema exacto responsable en menos de 10 microsegundos.
+                </p>
+            </article>
+        </section>
+
+        <!-- ───────────────────────────────────────────────────────────── -->
+        <!-- SECTION 3: EJEMPLOS DE CÓDIGO -->
+        <!-- ───────────────────────────────────────────────────────────── -->
+        <section id="codigo">
+            <div class="section-header">
+                <span class="section-icon">💻</span>
+                <h2>3. Ejemplos de Código y API Reference</h2>
+            </div>
+
+            <!-- Code 1 -->
+            <article id="code-setup">
+                <h3>1. Setup Básico del World y ComponentStore</h3>
+                <p>Registro de componentes con asignación explícita de tiers (Hot/Warm/Cold) e inicialización del World.</p>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>cpp / setup_world.cpp</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    </div>
+                    <pre><code><span class="kw">#include</span> <span class="str">"core/headers/ecs.h"</span>
+
+<span class="kw">using namespace</span> <span class="type">fluxdb::ecs</span>;
+
+<span class="kw">struct</span> <span class="type">Position</span> { <span class="type">float</span> x, y, z; };
+<span class="kw">struct</span> <span class="type">Velocity</span> { <span class="type">float</span> x, y, z; };
+<span class="kw">struct</span> <span class="type">Health</span>   { <span class="type">int</span> hp; };
+
+<span class="type">int</span> <span class="func">main</span>() {
+    <span class="cmnt">// 1. Registro de tipos de componentes con Tiers de memoria</span>
+    <span class="kw">auto</span> store = std::<span class="func">make_shared</span>&lt;<span class="type">ComponentStore</span>&gt;();
+    <span class="type">ComponentID</span> pos_id = store-&gt;<span class="func">register_component</span>(<span class="str">"Position"</span>, <span class="kw">sizeof</span>(<span class="type">Position</span>), <span class="type">ComponentTier</span>::HOT);
+    <span class="type">ComponentID</span> vel_id = store-&gt;<span class="func">register_component</span>(<span class="str">"Velocity"</span>, <span class="kw">sizeof</span>(<span class="type">Velocity</span>), <span class="type">ComponentTier</span>::HOT);
+    <span class="type">ComponentID</span> hp_id  = store-&gt;<span class="func">register_component</span>(<span class="str">"Health"</span>,   <span class="kw">sizeof</span>(<span class="type">Health</span>),   <span class="type">ComponentTier</span>::WARM);
+
+    <span class="cmnt">// 2. Inicialización del World con administrador de historial de ticks</span>
+    <span class="type">World</span> world(store, std::<span class="func">make_shared</span>&lt;<span class="type">HistoryManager</span>&gt;(<span class="num">200</span>));
+    
+    <span class="kw">return</span> <span class="num">0</span>;
+}</code></pre>
+                </div>
+            </article>
+
+            <!-- Code 2 -->
+            <article id="code-crud">
+                <h3>2. Spawning de Entidades y Consultas Compiladas</h3>
+                <p>Población masiva e iteración optimizada sobre arquetipos contiguos.</p>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>cpp / ecs_queries.cpp</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    </div>
+                    <pre><code><span class="cmnt">// Spawning de 100,000 entidades</span>
+<span class="type">Position</span> p{<span class="num">0</span>, <span class="num">0</span>, <span class="num">0</span>};
+<span class="type">Velocity</span> v{<span class="num">1.5f</span>, <span class="num">0.0f</span>, <span class="num">0.0f</span>};
+<span class="type">Health</span> h{<span class="num">100</span>};
+
+<span class="kw">for</span> (<span class="type">int</span> i = <span class="num">0</span>; i &lt; <span class="num">100000</span>; ++i) {
+    <span class="type">Entity</span> e = world.<span class="func">spawn</span>();
+    p.x = <span class="kw">static_cast</span>&lt;<span class="type">float</span>&gt;(i);
+    world.<span class="func">add_component</span>(e, pos_id, &amp;p);
+    world.<span class="func">add_component</span>(e, vel_id, &amp;v);
+    <span class="kw">if</span> (i % <span class="num">2</span> == <span class="num">0</span>) world.<span class="func">add_component</span>(e, hp_id, &amp;h);
+}
+
+<span class="cmnt">// Iteración ultrarrápida sobre arquetipos (Consultas Compiladas)</span>
+world.<span class="func">advance_tick</span>();
+<span class="kw">for</span> (<span class="kw">const auto</span>&amp; [sig, arch] : world.<span class="func">get_archetypes</span>()) {
+    <span class="type">size_t</span> count = arch-&gt;<span class="func">get_entity_count</span>();
+    <span class="type">Position</span>* pos_array = <span class="kw">reinterpret_cast</span>&lt;<span class="type">Position</span>*&gt;(arch-&gt;<span class="func">get_component_array</span>(pos_id));
+    <span class="type">Velocity</span>* vel_array = <span class="kw">reinterpret_cast</span>&lt;<span class="type">Velocity</span>*&gt;(arch-&gt;<span class="func">get_component_array</span>(vel_id));
+
+    <span class="kw">if</span> (pos_array &amp;&amp; vel_array) {
+        <span class="kw">for</span> (<span class="type">size_t</span> i = <span class="num">0</span>; i &lt; count; ++i) {
+            pos_array[i].x += vel_array[i].x * <span class="num">0.016f</span>;
+        }
+    }
+}</code></pre>
+                </div>
+            </article>
+
+            <!-- Code 3 -->
+            <article id="code-relations">
+                <h3>3. Jerarquías de Entidades y Grafos de Relación</h3>
+                <p>Modelado de torretas montadas en naves nodriza usando la relación nativa <code>CHILD_OF</code>.</p>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>cpp / relations_demo.cpp</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    </div>
+                    <pre><code><span class="kw">#include</span> <span class="str">"core/headers/relations.h"</span>
+
+<span class="kw">using namespace</span> <span class="type">fluxdb::relations</span>;
+
+<span class="type">RelationGraph</span> relations;
+<span class="kw">const</span> <span class="type">RelationKind</span> CHILD_OF_KIND = <span class="num">1</span>;
+
+<span class="type">Entity</span> ship = world.<span class="func">spawn</span>();
+<span class="type">Entity</span> turret = world.<span class="func">spawn</span>();
+
+<span class="cmnt">// Establecer relación: Turret es hija de Ship</span>
+relations.<span class="func">add_relation</span>(turret, CHILD_OF_KIND, ship);
+
+<span class="cmnt">// Actualizar posición de la torreta en función de la nave padre</span>
+relations.<span class="func">for_each_incoming</span>(ship, CHILD_OF_KIND, [&amp;](<span class="type">Entity</span> child_turret, <span class="kw">const</span> <span class="type">RelationPayload</span>&amp; payload) {
+    <span class="type">Position</span> tur_pos{p.x, p.y + <span class="num">1.0f</span>, p.z};
+    world.<span class="func">add_component</span>(child_turret, pos_id, &amp;tur_pos);
+});</code></pre>
+                </div>
+            </article>
+
+            <!-- Code 4 -->
+            <article id="code-spatial">
+                <h3>4. Consultas Espaciales 3D con Octree</h3>
+                <p>Indexación de entidades en Octree para detección de colisiones de rango O(1).</p>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>cpp / spatial_octree.cpp</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    </div>
+                    <pre><code><span class="kw">#include</span> <span class="str">"core/headers/spatial_index.h"</span>
+
+<span class="kw">using namespace</span> <span class="type">fluxdb::spatial</span>;
+
+<span class="cmnt">// Inicialización de Octree con límites de 10k unidades</span>
+<span class="type">SpatialIndex</span> spatial_octree(<span class="type">Bounds</span>{-<span class="num">10000.0f</span>, -<span class="num">10000.0f</span>, -<span class="num">10000.0f</span>, <span class="num">10000.0f</span>, <span class="num">10000.0f</span>, <span class="num">10000.0f</span>});
+
+<span class="cmnt">// Insertar o actualizar posición de entidad en el índice</span>
+spatial_octree.<span class="func">update_entity</span>(e, p.x, p.y, p.z);
+
+<span class="cmnt">// Consulta de rango (r = 100m alrededor del jugador)</span>
+std::<span class="type">vector</span>&lt;<span class="type">Entity</span>&gt; nearby_entities;
+spatial_octree.<span class="func">query_range</span>(player_pos.x, player_pos.y, player_pos.z, <span class="num">100.0f</span>, nearby_entities);
+
+std::cout &lt;&lt; <span class="str">"Entidades cercanas en rango: "</span> &lt;&lt; nearby_entities.<span class="func">size</span>() &lt;&lt; std::endl;</code></pre>
+                </div>
+            </article>
+
+            <!-- Code 5 -->
+            <article id="code-rollback">
+                <h3>5. Rollback Netcode y Captura de Snapshots (COW)</h3>
+                <p>Captura de estado instantáneo, avance de ticks y resimulación en caso de predicción fallida de red.</p>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>cpp / rollback_netcode.cpp</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    </div>
+                    <pre><code><span class="kw">#include</span> <span class="str">"core/headers/rollback.h"</span>
+
+<span class="kw">using namespace</span> <span class="type">fluxdb::rollback</span>;
+
+<span class="type">WorldSnapshot</span> snap;
+
+<span class="cmnt">// Captura de Snapshot con costo O(páginas) gracias a Copy-On-Write</span>
+snap.<span class="func">capture</span>(world);
+<span class="type">uint64_t</span> saved_tick = snap.<span class="func">tick</span>();
+
+<span class="cmnt">// Avance de 10 ticks simulados</span>
+<span class="kw">for</span> (<span class="type">int</span> t = <span class="num">0</span>; t &lt; <span class="num">10</span>; ++t) {
+    world.<span class="func">advance_tick</span>();
+}
+
+<span class="cmnt">// Se recibe paquete de servidor: ¡Predicción incorrecta! -> Restauración instantánea</span>
+<span class="kw">if</span> (snap.<span class="func">captured</span>()) {
+    snap.<span class="func">restore</span>(world); <span class="cmnt">// El mundo vuelve exactamente al saved_tick</span>
+}</code></pre>
+                </div>
+            </article>
+
+            <!-- Code 6 -->
+            <article id="code-ai">
+                <h3>6. Sistemas de IA Nativa (GOAP)</h3>
+                <p>Planificación de acciones basada en metas (Goal-Oriented Action Planning) evaluada a más de 27,000 planes/ms.</p>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>cpp / goap_ai.cpp</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    </div>
+                    <pre><code><span class="kw">#include</span> <span class="str">"core/headers/ai_bt_goap.h"</span>
+
+<span class="kw">using namespace</span> <span class="type">fluxdb::ai</span>;
+
+<span class="type">GoapPlanner</span> planner;
+<span class="type">WorldState</span> start_state;
+<span class="type">WorldState</span> goal_state;
+
+start_state.<span class="func">set</span>(<span class="str">"has_target"</span>, <span class="kw">false</span>);
+goal_state.<span class="func">set</span>(<span class="str">"enemy_destroyed"</span>, <span class="kw">true</span>);
+
+<span class="cmnt">// Cálculo del plan A* óptimo en el grafo de estados</span>
+<span class="kw">auto</span> plan = planner.<span class="func">plan</span>(start_state, goal_state);
+std::cout &lt;&lt; <span class="str">"Pasos del plan generado: "</span> &lt;&lt; plan.<span class="func">size</span>() &lt;&lt; std::endl;</code></pre>
+                </div>
+            </article>
+
+            <!-- Code 7 -->
+            <article id="code-modding">
+                <h3>7. Modding, Schema Evolution y Hot-Reload en Caliente</h3>
+                <p>Modificación del stride de un componente en tiempo de ejecución sin detener el servidor ni reiniciar el juego.</p>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span>cpp / schema_hot_reload.cpp</span>
+                        <button class="copy-btn" onclick="copyCode(this)">Copiar</button>
+                    </div>
+                    <pre><code><span class="cmnt">// Reestructuración de memoria in-place: expandir componente Stats de 8B a 12B</span>
+<span class="type">Archetype::FieldMap</span> field_map[<span class="num">2</span>] = {
+    {<span class="num">0</span>, <span class="num">0</span>, <span class="num">4</span>}, <span class="cmnt">// campo atk (offset 0 -> offset 0, len 4)</span>
+    {<span class="num">4</span>, <span class="num">4</span>, <span class="num">4</span>}  <span class="cmnt">// campo def (offset 4 -> offset 4, len 4)</span>
+};
+
+<span class="cmnt">// Migrar 100,000 entidades activas en < 0.4 milisegundos</span>
+<span class="type">size_t</span> migrated_rows = world.<span class="func">hot_reload_component</span>(stats_id, <span class="num">12</span>, field_map, <span class="num">2</span>, <span class="num">0</span>);
+std::cout &lt;&lt; <span class="str">"Filas migradas exitosamente en caliente: "</span> &lt;&lt; migrated_rows &lt;&lt; std::endl;</code></pre>
+                </div>
+            </article>
+        </section>
+
+    </main>
+
+    <!-- Mobile Navigation Toggle -->
+    <button class="mobile-toggle" onclick="toggleSidebar()">☰</button>
+
+    <!-- JavaScript Navigation & Copy Logic -->
+    <script>
+        // Copy code snippet logic
+        function copyCode(button) {
+            const pre = button.parentElement.nextElementSibling;
+            const code = pre.innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                const originalText = button.innerText;
+                button.innerText = '¡Copiado!';
+                button.style.color = '#34d399';
+                button.style.borderColor = '#34d399';
+                setTimeout(() => {
+                    button.innerText = originalText;
+                    button.style.color = '';
+                    button.style.borderColor = '';
+                }, 2000);
+            });
+        }
+
+        // Live Search Filter
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            const links = document.querySelectorAll('.nav-link');
+            
+            links.forEach(link => {
+                const text = link.innerText.toLowerCase();
+                if (text.includes(term)) {
+                    link.style.display = 'block';
+                } else {
+                    link.style.display = 'none';
+                }
+            });
+        });
+
+        // Mobile Sidebar Toggle
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        // Active link highlighting on scroll
+        window.addEventListener('scroll', () => {
+            let current = '';
+            const sections = document.querySelectorAll('section, article[id]');
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

@@ -4,9 +4,9 @@
 #include "../core/headers/spatial.h"
 #include "../core/headers/types.h"
 
-using namespace veldradb::spatial;
-using namespace veldradb::types;
-using namespace veldradb::ecs;
+using namespace fluxdb::spatial;
+using namespace fluxdb::types;
+using namespace fluxdb::ecs;
 
 int main() {
     std::cout << "--- VeldraDB Spatial Grid Test ---\n";

@@ -8,8 +8,8 @@
 #include <cstring>
 #include <string>
 
-using namespace veldradb::ecs;
-using namespace veldradb::query;
+using namespace fluxdb::ecs;
+using namespace fluxdb::query;
 
 struct Position { float x, y, z; };
 struct Health   { int hp; };

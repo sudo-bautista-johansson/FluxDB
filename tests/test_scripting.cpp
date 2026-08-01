@@ -3,9 +3,9 @@
 #include <iostream>
 #include <cassert>
 
-using namespace veldradb;
-using namespace veldradb::ecs;
-using namespace veldradb::query;
+using namespace fluxdb;
+using namespace fluxdb::ecs;
+using namespace fluxdb::query;
 
 struct PlayerStats {
     int gold;
@@ -26,15 +26,15 @@ int main() {
     ScriptEngine engine(&world);
     
     // Test 1: Simple Lua Get
-    std::string script1 = "local g = veldra.get(" + std::to_string(player) + ", 'gold')\n"
+    std::string script1 = "local g = flux.get(" + std::to_string(player) + ", 'gold')\n"
                           "print('Gold from Lua:', g)\n"
                           "assert(g == 100)";
     assert(engine.run_script(script1));
     std::cout << "1. Lua Get successful.\n";
     
     // Test 2: Lua Set (Logic inside database)
-    std::string script2 = "local g = veldra.get(" + std::to_string(player) + ", 'gold')\n"
-                          "veldra.set(" + std::to_string(player) + ", 'gold', g + 50)";
+    std::string script2 = "local g = flux.get(" + std::to_string(player) + ", 'gold')\n"
+                          "flux.set(" + std::to_string(player) + ", 'gold', g + 50)";
     assert(engine.run_script(script2));
     
     size_t size;

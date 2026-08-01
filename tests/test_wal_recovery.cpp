@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-using namespace veldradb::storage;
+using namespace fluxdb::storage;
 
 void run_test() {
     std::cout << "--- Starting WAL Crash Recovery Test ---" << std::endl;

@@ -4,7 +4,7 @@
 #include <cstdio>
 #include "../core/headers/storage.h"
 
-using namespace veldradb::storage;
+using namespace fluxdb::storage;
 
 int main() {
     std::cout << "--- VeldraDB Storage Layer Test ---\n";

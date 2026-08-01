@@ -5,7 +5,7 @@
 #include <cassert>
 #include <shared_mutex>
 
-using namespace veldradb;
+using namespace fluxdb;
 
 void thread_writer(std::shared_ptr<ecs::World> world, int thread_id, ecs::ComponentID pos_id) {
     for (int i = 0; i < 1000; ++i) {

@@ -4,7 +4,7 @@
 #include "core/headers/planner.h"
 #include "core/headers/executor.h"
 
-using namespace veldradb::query;
+using namespace fluxdb::query;
 
 int main(int argc, char** argv) {
     std::string sql;
@@ -24,7 +24,7 @@ int main(int argc, char** argv) {
         Planner planner(sql);
         auto plan = planner.plan();
         
-        // El executor de VeldraDB imprime los resultados por cout
+        // El executor de FluxDB imprime los resultados por cout
         Executor executor;
         executor.execute(plan);
         std::cout << "\n";
