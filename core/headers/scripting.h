@@ -13,7 +13,7 @@ namespace query {
 
 class ScriptEngine {
 public:
-    ScriptEngine(veldradb::ecs::World* world);
+    ScriptEngine(fluxdb::ecs::World* world);
     ~ScriptEngine();
 
     // Runs a raw Lua script
@@ -29,7 +29,7 @@ private:
     void register_bindings();
     
     lua_State* L;
-    veldradb::ecs::World* world_;
+    fluxdb::ecs::World* world_;
 };
 
 } // namespace query

@@ -18,6 +18,11 @@ void HistoryManager::advance_tick() {
     }
 }
 
+void HistoryManager::advance_to(uint64_t t) {
+    std::unique_lock<std::shared_mutex> lock(mutex_);
+    current_tick_ = t;
+}
+
 void HistoryManager::record_change(uint32_t e, uint8_t comp_id, const void* old_data, size_t size) {
     std::unique_lock<std::shared_mutex> lock(mutex_);
     

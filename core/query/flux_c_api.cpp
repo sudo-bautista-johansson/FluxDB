@@ -123,14 +123,15 @@ FLUX_API const char* flux_get_last_error() {
 }
 
 FLUX_API void flux_advance_tick(FluxDB* db) {
-    if (db && db->history_mgr) {
-        db->history_mgr->advance_tick();
+    if (db && db->world) {
+        // Avanza VersionTracker + HistoryManager en sync (Temporal Versioning #4)
+        db->world->advance_tick();
     }
 }
 
 FLUX_API uint64_t flux_get_current_tick(FluxDB* db) {
-    if (db && db->history_mgr) {
-        return db->history_mgr->get_current_tick();
+    if (db && db->world) {
+        return db->world->current_tick();
     }
     return 0;
 }

@@ -59,6 +59,9 @@ public:
     void flush(LSN lsn);
     void flush_all();
 
+    // Reads every record currently persisted in the WAL (for crash recovery)
+    std::vector<LogRecord> read_all_records();
+
 private:
     std::string filepath_;
     std::fstream file_;

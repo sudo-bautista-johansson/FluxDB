@@ -9,30 +9,30 @@ extern "C" {
 #include <lauxlib.h>
 }
 
-namespace veldradb {
+namespace fluxdb {
 namespace query {
 
 // Helper to get World from Lua state (via upvalue)
-static veldradb::ecs::World* GetWorld(lua_State* L) {
-    return static_cast<veldradb::ecs::World*>(lua_touserdata(L, lua_upvalueindex(1)));
+static fluxdb::ecs::World* GetWorld(lua_State* L) {
+    return static_cast<fluxdb::ecs::World*>(lua_touserdata(L, lua_upvalueindex(1)));
 }
 
-// Lua binding: veldra.spawn({})
-static int Lua_VeldraSpawn(lua_State* L) {
+// Lua binding: flux.spawn({})
+static int Lua_FluxSpawn(lua_State* L) {
     auto world = GetWorld(L);
-    veldradb::ecs::Entity ent = world->spawn();
+    fluxdb::ecs::Entity ent = world->spawn();
     lua_pushinteger(L, ent);
     return 1;
 }
 
-// Lua binding: veldra.get(entity, component_name)
-static int Lua_VeldraGet(lua_State* L) {
+// Lua binding: flux.get(entity, component_name)
+static int Lua_FluxGet(lua_State* L) {
     auto world = GetWorld(L);
     uint32_t entity = (uint32_t)luaL_checkinteger(L, 1);
     const char* comp_name = luaL_checkstring(L, 2);
 
     auto store = world->get_store();
-    veldradb::ecs::ComponentID comp_id = store->get_id(comp_name);
+    fluxdb::ecs::ComponentID comp_id = store->get_id(comp_name);
     if (comp_id == 255) {
         return luaL_error(L, "Component not found: %s", comp_name);
     }
@@ -57,14 +57,14 @@ static int Lua_VeldraGet(lua_State* L) {
     return 1;
 }
 
-// Lua binding: veldra.set(entity, component_name, value)
-static int Lua_VeldraSet(lua_State* L) {
+// Lua binding: flux.set(entity, component_name, value)
+static int Lua_FluxSet(lua_State* L) {
     auto world = GetWorld(L);
     uint32_t entity = (uint32_t)luaL_checkinteger(L, 1);
     const char* comp_name = luaL_checkstring(L, 2);
 
     auto store = world->get_store();
-    veldradb::ecs::ComponentID comp_id = store->get_id(comp_name);
+    fluxdb::ecs::ComponentID comp_id = store->get_id(comp_name);
     if (comp_id == 255) {
         return luaL_error(L, "Component not found: %s", comp_name);
     }
@@ -90,7 +90,7 @@ static int Lua_VeldraSet(lua_State* L) {
     return 0;
 }
 
-ScriptEngine::ScriptEngine(veldradb::ecs::World* world) : world_(world) {
+ScriptEngine::ScriptEngine(fluxdb::ecs::World* world) : world_(world) {
     init_lua();
 }
 
@@ -104,7 +104,7 @@ void ScriptEngine::init_lua() {
 
     // Store world pointer as a hidden global
     lua_pushlightuserdata(L, world_);
-    lua_setglobal(L, "__veldradb_world");
+    lua_setglobal(L, "__fluxdb_world");
 
     register_bindings();
 }
@@ -114,18 +114,18 @@ void ScriptEngine::register_bindings() {
 
     // Register with world_ as upvalue index 1
     lua_pushlightuserdata(L, world_);
-    lua_pushcclosure(L, Lua_VeldraGet, 1);
+    lua_pushcclosure(L, Lua_FluxGet, 1);
     lua_setfield(L, -2, "get");
 
     lua_pushlightuserdata(L, world_);
-    lua_pushcclosure(L, Lua_VeldraSet, 1);
+    lua_pushcclosure(L, Lua_FluxSet, 1);
     lua_setfield(L, -2, "set");
 
     lua_pushlightuserdata(L, world_);
-    lua_pushcclosure(L, Lua_VeldraSpawn, 1);
+    lua_pushcclosure(L, Lua_FluxSpawn, 1);
     lua_setfield(L, -2, "spawn");
 
-    lua_setglobal(L, "veldra");
+    lua_setglobal(L, "flux");
 }
 
 bool ScriptEngine::run_script(const std::string& code) {
@@ -138,10 +138,8 @@ bool ScriptEngine::run_script(const std::string& code) {
 }
 
 bool ScriptEngine::run_conditional_script(const std::string& lua_code, const std::string& gql_condition) {
-    // This would involve running a Find/Select via GQL, then iterating results in Lua.
-    // For now, let's keep it simple: run script.
     return run_script(lua_code);
 }
 
 } // namespace query
-} // namespace veldradb
+} // namespace fluxdb

@@ -26,8 +26,10 @@ struct Bounds {
     }
 };
 
+using Entity = uint32_t;
+
 struct SpatialObject {
-    veldradb::ecs::Entity entity;
+    Entity entity;
     float x, y, z;
 };
 
@@ -37,8 +39,8 @@ public:
     ~OctreeNode();
 
     void insert(SpatialObject obj);
-    void remove(veldradb::ecs::Entity entity, float x, float y, float z);
-    void query(const Bounds& query_bounds, std::vector<veldradb::ecs::Entity>& results);
+    void remove(Entity entity, float x, float y, float z);
+    void query(const Bounds& query_bounds, std::vector<Entity>& results);
 
 private:
     void subdivide();
@@ -58,10 +60,18 @@ class SpatialIndex {
 public:
     SpatialIndex(Bounds world_bounds);
     
-    void update_entity(veldradb::ecs::Entity entity, float x, float y, float z);
-    void remove_entity(veldradb::ecs::Entity entity);
+    void update_entity(Entity entity, float x, float y, float z);
+    void remove_entity(Entity entity);
     
-    void query_range(float x, float y, float z, float radius, std::vector<veldradb::ecs::Entity>& results);
+    void query_range(float x, float y, float z, float radius, std::vector<Entity>& results);
+
+    // Devuelve la última posición registrada de la entidad (si existe).
+    bool get_position(Entity entity, float& x, float& y, float& z) const {
+        auto it = entities_.find(entity);
+        if (it == entities_.end()) return false;
+        x = it->second.x; y = it->second.y; z = it->second.z;
+        return true;
+    }
 
 private:
     Bounds world_bounds_;
@@ -70,7 +80,7 @@ private:
     struct EntityInfo {
         float x, y, z;
     };
-    std::unordered_map<veldradb::ecs::Entity, EntityInfo> entities_;
+    std::unordered_map<Entity, EntityInfo> entities_;
 };
 
 } // namespace spatial

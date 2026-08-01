@@ -2,7 +2,7 @@
 #include <cmath>
 #include <algorithm>
 
-namespace veldradb {
+namespace fluxdb {
 namespace spatial {
 
 OctreeNode::OctreeNode(const Bounds& bounds, int depth) : bounds_(bounds), depth_(depth) {
@@ -59,7 +59,7 @@ void OctreeNode::insert(SpatialObject obj) {
     }
 }
 
-void OctreeNode::remove(veldradb::ecs::Entity entity, float x, float y, float z) {
+void OctreeNode::remove(Entity entity, float x, float y, float z) {
     if (!is_leaf_) {
         int idx = get_child_index(x, y, z);
         children_[idx]->remove(entity, x, y, z);
@@ -72,7 +72,7 @@ void OctreeNode::remove(veldradb::ecs::Entity entity, float x, float y, float z)
     objects_.erase(it, objects_.end());
 }
 
-void OctreeNode::query(const Bounds& query_bounds, std::vector<veldradb::ecs::Entity>& results) {
+void OctreeNode::query(const Bounds& query_bounds, std::vector<Entity>& results) {
     if (!bounds_.intersects(query_bounds)) return;
 
     if (!is_leaf_) {
@@ -91,7 +91,7 @@ void OctreeNode::query(const Bounds& query_bounds, std::vector<veldradb::ecs::En
 
 SpatialIndex::SpatialIndex(Bounds world_bounds) : world_bounds_(world_bounds), root_(world_bounds) {}
 
-void SpatialIndex::update_entity(veldradb::ecs::Entity entity, float x, float y, float z) {
+void SpatialIndex::update_entity(Entity entity, float x, float y, float z) {
     auto it = entities_.find(entity);
     if (it != entities_.end()) {
         root_.remove(entity, it->second.x, it->second.y, it->second.z);
@@ -101,7 +101,7 @@ void SpatialIndex::update_entity(veldradb::ecs::Entity entity, float x, float y,
     root_.insert({entity, x, y, z});
 }
 
-void SpatialIndex::remove_entity(veldradb::ecs::Entity entity) {
+void SpatialIndex::remove_entity(Entity entity) {
     auto it = entities_.find(entity);
     if (it != entities_.end()) {
         root_.remove(entity, it->second.x, it->second.y, it->second.z);
@@ -109,10 +109,10 @@ void SpatialIndex::remove_entity(veldradb::ecs::Entity entity) {
     }
 }
 
-void SpatialIndex::query_range(float x, float y, float z, float radius, std::vector<veldradb::ecs::Entity>& results) {
+void SpatialIndex::query_range(float x, float y, float z, float radius, std::vector<Entity>& results) {
     Bounds query_bounds{x - radius, y - radius, z - radius, x + radius, y + radius, z + radius};
     root_.query(query_bounds, results);
 }
 
 } // namespace spatial
-} // namespace veldradb
+} // namespace fluxdb

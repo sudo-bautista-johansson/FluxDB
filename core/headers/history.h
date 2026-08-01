@@ -33,6 +33,9 @@ public:
     void advance_tick();
     uint64_t get_current_tick() const { return current_tick_; }
 
+    // Salto determinista del reloj (replay de #7): fija el tick sin loggear.
+    void advance_to(uint64_t t);
+
     // Save the old state of a component before it gets overwritten
     void record_change(uint32_t e, uint8_t comp_id, const void* old_data, size_t size);
 
