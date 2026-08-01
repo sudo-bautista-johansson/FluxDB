@@ -12,4 +12,4 @@
 Run `install.bat` (Windows) to compile and install the FluxDB engine globally.
 
 ## Documentation
-Check the `docs/` folder or visit the [FluxDB Web Documentation](docs/web/index.html).
+https://fluxdb.netlify.app/
